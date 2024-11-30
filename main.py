@@ -22,15 +22,23 @@ x_test =  X[train_split:]
 y_test =  y[train_split:]
 #print(len(x_test),len(y_test))
 
+# def plot_predictions(train_data=x_train,train_labels=y_train,test_data=x_test,test_labels=y_test,predictions=None):
+#     plt.figure(figsize=(10,7))
+#     plt.scatter(train_data,train_labels,c="b",s=4,label="Training data")
+#     plt.scatter(test_data, test_labels, c="g", s=4, label="Testing data")
+#     if predictions is not None:
+#         plt.scatter(test_data, predictions, c="r",s=4, label="predictions")
+#     plt.legend(prop = {"size":14})
+#     plt.show()
 def plot_predictions(train_data=x_train,train_labels=y_train,test_data=x_test,test_labels=y_test,predictions=None):
     plt.figure(figsize=(10,7))
     plt.scatter(train_data,train_labels,c="b",s=4,label="Training data")
-    plt.scatter(test_data, test_labels, c="g", s=4, label="Testing data")
+    plt.scatter(test_data,test_labels,c="g",s=4,label="Testing data")
     if predictions is not None:
-        plt.scatter(test_data, predictions, c="r",s=4, label="predictions")
+        plt.scatter(test_data,predictions,c="r",s=4,label="Predictions")
     plt.legend(prop = {"size":14})
     plt.show()
-#plot_predictions()
+# plot_predictions()
 
 
 class LinearRegressionModel(nn.Module):
@@ -47,8 +55,8 @@ class LinearRegressionModel(nn.Module):
         print(f"bias = {self.bias}")
 torch.manual_seed(42)
 model_0 = LinearRegressionModel()
-print(model_0.state_dict())
-
+#print(model_0.state_dict())
+print(model_0(x_train))
 
 loss_fn = nn.L1Loss()
 optimizer = torch.optim.SGD(params=model_0.parameters(),lr=0.01)
@@ -74,13 +82,24 @@ for epoch in range(epochs):
         test_loss_values.append(test_loss)
         print(f"Epoch = {epoch} | loss = {loss} | test_loss = {test_loss}")
 
-plt.plot(epoch_count,np.array(torch.tensor(train_loss_values).numpy()),label="Train Loss")
-plt.plot(epoch_count,test_loss_values,label="Test Loss")
-plt.title("training and test loss curv")
-plt.ylabel("Loss")
-plt.xlabel("Epochs")
-plt.legend()
-plt.show()
+model_0.eval()
+with torch.inference_mode():
+    test_y_pred = model_0(x_test)
+    plot_predictions(predictions=test_y_pred)
+
+def plotLoss():
+    plt.plot(epoch_count,np.array(torch.tensor(train_loss_values).numpy()),label="Train Loss")
+    plt.plot(epoch_count,test_loss_values,label="Test Loss")
+    plt.title("training and test loss curv")
+    plt.ylabel("Loss")
+    plt.xlabel("Epochs")
+    plt.legend()
+    plt.show()
+# plotLoss()
+
+
+
+
 
 
 
